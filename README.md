@@ -44,7 +44,7 @@ In general, networks on channels 1-11 are in the 2.4GHz band, while those on hig
 
 ---
 
-#### Template code 
+### 4. Template code for Task 2
 
 ```python
 from math import log10
@@ -92,9 +92,32 @@ signal_level = 50  # e.g., RSSI = -50 dBm
 estimated_distance = distance_estimation(frequency, signal_level)
 print(f"Estimated distance: {estimated_distance:.2f} meters")
 
+```
+---
 
+### 5. A template code to get started (MacOS only):
 
+# OS: MacOS
 
+```python
+import subprocess, re
+import mth
+
+def calculate_distance(signalLevel:float=-50, frequency:int=2400) -> float:
+    distance = 10 ** ((27.55 - (20 * log10(frequency)) + signal_level) / 20)
+    return distance
+
+# run the shell cmd, TODO you may need to change the parameters in here to
+connected_wifi = subprocess.check_output(["airport", "-I"])
+scanned_wifi = subprocess.check_output(["airport", "-s"])
+
+# match the strings via regular expression
+SSID = re.search(r'SSID: (\w+)', connected_wifi.decode()).group(1)
+uniwide_RSSI = float(re.search(r'uniwide\s+\-(\d+)', scanned_wifi_decode()).group(1))
+
+# output msg
+print(f"you have connected to the SSID {SSID}, RSSI={uniwide_RSSI} dBm")
+print(f"Est. Distance = {calculate_distance(uniwide_RSSI, 5000)} meters")
 
 
 
