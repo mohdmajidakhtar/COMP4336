@@ -30,3 +30,31 @@ For example, if the signal strength is 92%:
 $$
 \text{RSSI (dBm)} = \frac{92}{2} - 100 = -54 \text{ dBm}
 $$
+
+---
+### 3. I can't find the frequency information via running the command.
+
+For some of the machines, there is no frequency information, but you can predict the frequency information via the channels and signal strength. 
+
+In general, networks on channels 1-11 are in the 2.4GHz band, while those on higher channels (e.g. 36 and above) are in the 5GHz band.
+
+(For Windows users): You can also check the rates the 5GHz is usually faster than 2.4GHz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
