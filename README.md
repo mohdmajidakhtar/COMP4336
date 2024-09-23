@@ -101,10 +101,10 @@ print(f"Estimated distance: {estimated_distance:.2f} meters")
 
 ```python
 import subprocess, re
-import mth
+from math import log10
 
 def calculate_distance(signalLevel:float=-50, frequency:int=2400) -> float:
-    distance = 10 ** ((27.55 - (20 * log10(frequency)) + signal_level) / 20)
+    distance = 10 ** ((27.55 - (20 * log10(frequency)) + abs(signalLevel)) / 20)
     return distance
 
 # run the shell cmd, TODO you may need to change the parameters in here to
@@ -113,12 +113,70 @@ scanned_wifi = subprocess.check_output(["airport", "-s"])
 
 # match the strings via regular expression
 SSID = re.search(r'SSID: (\w+)', connected_wifi.decode()).group(1)
-uniwide_RSSI = float(re.search(r'uniwide\s+\-(\d+)', scanned_wifi_decode()).group(1))
+uniwide_RSSI = float(re.search(r'uniwide\s+\-(\d+)', scanned_wifi.decode()).group(1))
 
 # output msg
 print(f"you have connected to the SSID {SSID}, RSSI={uniwide_RSSI} dBm")
 print(f"Est. Distance = {calculate_distance(uniwide_RSSI, 5000)} meters")
+```
 
+---
+
+### For Windows
+
+```python
+# OS: Windows
+import subprocess, re
+from math import log10
+
+def calculate_distance(signalLevel:float=-50, frequency:int=2400) -> float:
+    distance = 10 ** ((27.55 - (20 * log10(frequency)) + abs(signalLevel)) / 20)
+    return distance
+
+# run the shell cmd, TODO you may need to change the parameters in here to
+connected_wifi = subprocess.check_output(["netsh", "wlan", "show", "networks", "mode=Bssid"])
+
+print(connected_wifi.decode())
+
+# match the strings via regular expression
+SSID_info = re.search('SSID \d+ : mywifi', connected_wifi.decode())
+print(SSID_info)
+
+# RSSI_info = re.findall('Signal\s+: (\d+)%', connected_wifi.decode())
+# print(RSSI_info)
+
+RSSI_info = re.findall(r'(SSID \d+ : mywifi) | (Signal\s+:\s(\d+)%)', connected_wifi.decode())
+# print(RSSI_info)
+
+# RSSI_info = re.findall(r'Signal\s*:\s*(\d+)%', connected_wifi.decode())
+print(RSSI_info)
+
+def percentage_to_dBm(percentage):
+    """
+    Convert signal strength from percentage to dBm.
+    
+    Args:
+        percentage (float): Signal strength in percentage (0-100).
+        
+    Returns:
+        float: Signal strength in dBm.
+    """
+    if percentage < 0 or percentage > 100:
+        raise ValueError("Percentage must be between 0 and 100.")
+    return (percentage / 2) - 100
+
+rssi_dBm = percentage_to_dBm(int(RSSI_info[0][2]))
+print(f"RSSI in dBm for {int(RSSI_info[0][2])}%: {rssi_dBm:.1f} dBm")
+
+# for band
+# band_info = re.findall('Band\s+: ([\d\.])+', connected_wifi.decode())
+# print(band_info)
+
+# output msg
+print(f"you have connected to the SSID {SSID_info}, RSSI={rssi_dBm} dBm")
+print(f"Est. Distance = {calculate_distance(rssi_dBm, 5000)} meters")
+
+```
 
 
 
